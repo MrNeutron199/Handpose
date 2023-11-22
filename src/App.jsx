@@ -8,22 +8,17 @@ import { drawHand } from "./utilities";
 function App() {
   const webcamRef = useRef(null);
   const [webcamEnabled, setEnabled]= useState(true)
-  const [loadedModel, setModel] = useState(false)
-  const [model, setTheModel] = useState()
   const canvasRef = useRef(null);
 
   const runHandpose = async () => {
-   const net = await handpose.load();
-   console.log("Loaded Handpose Model")
-   setModel(true)
-   setTheModel(net)
+   handpose.load().then(model => {
+     console.log("Loaded Handpose Model")
+     setInterval(() => {
+       detect(model);   
+     }, 200);
+   })
  };
  runHandpose();
- const startLoad = () => {
-  setInterval(() => {
-     detect(model);
-   }, 150);
- }
  const startCam = () => {
   setEnabled(true)
   if (!webcamRef.current.video.srcObject) {
@@ -68,9 +63,6 @@ return (
  <div className="controlDiv">
  {
   webcamEnabled? <button onClick={stopCam}>Disable Webcam</button> : <button onClick={startCam}>Enable Webcam</button>
-}
-{
-  loadedModel? <button onClick={startLoad}>Detect Hands</button> : <button disabled={true}>Detect Hands</button>
 }
 </div>
 </header>
